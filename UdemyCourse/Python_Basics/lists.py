@@ -6,7 +6,7 @@ join = ";".join(friends)
 
 print(f"My friends are {join}.")
 
-'''
+
 print(len(friends))
 print(friends)
 
@@ -18,4 +18,4 @@ length = len(grades)
 average = total//length
 
 print("The Average value", average)
-'''
+
