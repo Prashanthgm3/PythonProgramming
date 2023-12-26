@@ -8,7 +8,7 @@ for friend in friends:
 
     name = friend[0]
     age = friend[1]
-    print(f"{name} is {age} years old")
+    print(f'{name} is {age} years old')
 
 #for name, age in friends:
  #   print(f"{name} is {age} years old.")
