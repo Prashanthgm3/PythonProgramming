@@ -1,50 +1,55 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-# Path to chromedriver executable
-chromedriver_path = "/path/to/chromedriver"
+import requests
+from bs4 import BeautifulSoup
 
 # URL of the webpage to scrape
-url = "https://www.screener.in/company/GRAVITA/consolidated/"
+url = 'https://www.screener.in/company/AFFLE/consolidated/'
 
-# Configure Selenium webdriver
-service = Service(chromedriver_path)
-driver = webdriver.Chrome(service=service)
+# Send a GET request to the URL
+response = requests.get(url)
 
-# Navigate to the URL
-driver.get(url)
+# Check if the request was successful (status code 200)
+if response.status_code == 200:
+    # Parse the HTML content of the page
+    soup = BeautifulSoup(response.content, 'html.parser')
 
-# Wait for the Market Cap element to be visible
-market_cap_element = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.CLASS_NAME, "data-bse"))
-)
+    # Find the table containing the data
+    table = soup.find('table', class_='data-table')
 
-# Extract the Market Cap value
-market_cap = market_cap_element.text.strip()
+    # Check if the table is found
+    if table:
+        # Initialize a dictionary to store the extracted ratios
+        ratios = {
+            "Stock P/E": None,
+            "Book Value": None,
+            "Dividend Yield": None,
+            "ROCE": None,
+            "ROE": None,
+            "Face Value": None
+        }
 
-# Wait for the Current Price element to be visible
-current_price_element = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.CLASS_NAME, "data-nse"))
-)
+        # Find all rows in the table
+        rows = table.find_all('tr')
 
-# Extract the Current Price value
-current_price = current_price_element.text.strip()
+        # Loop through each row in the table
+        for row in rows:
+            # Extract header and value from each row
+            header = row.find('td', class_='row-label')
+            value = row.find('td', class_='row-value')
 
-# Wait for the High / Low element to be visible
-high_low_element = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.XPATH, "//td[contains(text(), '52 Week High / Low')]/following-sibling::td"))
-)
+            # Check if both header and value exist
+            if header and value:
+                # Get text content of header and value
+                header_text = header.get_text().strip()
+                value_text = value.get_text().strip()
 
-# Extract the High / Low value
-high_low = high_low_element.text.strip()
+                # Check if header corresponds to a ratio we're interested in
+                if header_text in ratios:
+                    ratios[header_text] = value_text
 
-# Print the extracted values
-print("Market Cap:", market_cap)
-print("Current Price:", current_price)
-print("High / Low:", high_low)
-
-# Close the webdriver
-driver.quit()
+        # Print the extracted ratios
+        for ratio, value in ratios.items():
+            print(f"{ratio}: {value}")
+    else:
+        print("Table not found on the webpage.")
+else:
+    print("Failed to retrieve webpage. Status code:", response.status_code)
