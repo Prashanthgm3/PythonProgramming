@@ -5,4 +5,4 @@ page_content = requests.get('http://quotes.toscrape.com').content
 page = QuotesPage(page_content)
 
 for quotes in page.quotes:
-    print(quotes.content)
+    print(quotes.content) #main file
