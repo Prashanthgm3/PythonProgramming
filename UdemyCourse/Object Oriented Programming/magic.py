@@ -21,9 +21,10 @@ class Garage:
         return f'Garage with {len(self)} cars'
 
 ford = Garage()
-ford.cars.append('Fiesta')
+ford.cars.append('Fiesta123')
 ford.cars.append('Icon')
 ford.cars.append('FreeStyle')
+ford.cars.append('Innova')
 
 #print(len(ford))
 #print(ford.cars[0])
